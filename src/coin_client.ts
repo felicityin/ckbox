@@ -30,7 +30,7 @@ export class CoinClient {
   ): Promise<string> {
     let txSkeleton = helpers.TransactionSkeleton({ cellProvider: this.ckbClient.indexer });
 
-    const config = this.ckbClient.netConfig;
+    const config = this.ckbClient.config;
     for (var [toAddress, amount] of to) {
       txSkeleton = await commons.common.transfer(
         txSkeleton,
@@ -61,7 +61,7 @@ export class CoinClient {
   ): Promise<string> {
     let txSkeleton = helpers.TransactionSkeleton({ cellProvider: this.ckbClient.indexer });
 
-    const config = this.ckbClient.netConfig;
+    const config = this.ckbClient.config;
     for (var [toAddress, amount] of to) {
       txSkeleton = await sudt.transfer(
         txSkeleton,
@@ -80,7 +80,7 @@ export class CoinClient {
   }
 
   public async getCkbBalance(address: string, lockOnly: boolean = true): Promise<bigint> {
-    const lock = parseAddress(address, { config: this.ckbClient.netConfig });
+    const lock = parseAddress(address, { config: this.ckbClient.config });
     const searchKey = {
       script: lock,
       script_type: ScriptType.lock,
@@ -94,7 +94,7 @@ export class CoinClient {
   }
 
   public async getSudtBalance(address: string, udt: Script): Promise<bigint> {
-    const lock = parseAddress(address, { config: this.ckbClient.netConfig });
+    const lock = parseAddress(address, { config: this.ckbClient.config });
     const searchKey = {
       script: lock,
       script_type: ScriptType.lock,
@@ -121,7 +121,7 @@ export class CoinClient {
       amount,
       undefined,
       undefined,
-      { config: this.ckbClient.netConfig}
+      { config: this.ckbClient.config}
     );
 
     return await this.ckbClient.submitTransaction(txSkeleton, from, fee);
@@ -132,7 +132,7 @@ export class CoinClient {
   }
 
   public calcSudtScript(from: CkbAccount): Script {
-    const template = this.ckbClient.netConfig.SCRIPTS.SUDT;
+    const template = this.ckbClient.config.SCRIPTS.SUDT;
     if (!template) {
       throw new Error("Provided config does not have SUDT script setup!");
     }
