@@ -12,7 +12,7 @@ import { asyncSleep, calcFromInfos } from './utils';
 export class CkbClient {
   public rpc: RPC;
   public indexer: InstanceType<typeof Indexer>;
-  public netConfig: Config;
+  public config: Config;
 
   constructor(ckbRpcUrl: string, ckbIndexerUrl: string) {
     if (!ckbRpcUrl) {
@@ -22,7 +22,7 @@ export class CkbClient {
       throw new Error("Indexer URL cannot be empty.");
     }
 
-    this.netConfig = ckbRpcUrl.includes("main") ? predefined.LINA: predefined.AGGRON4;
+    this.config = ckbRpcUrl.includes("main") ? predefined.LINA: predefined.AGGRON4;
     this.rpc = new RPC(ckbRpcUrl);
     this.indexer = new Indexer(ckbRpcUrl, ckbIndexerUrl);
   }
@@ -76,7 +76,7 @@ export class CkbClient {
   }
 
   public async payFee(txSkeleton: TransactionSkeletonType, from: CkbAccount, fee?: BIish): Promise<TransactionSkeletonType> {
-    const config = this.netConfig;
+    const config = this.config;
     if (fee) {
       txSkeleton = await commons.common.payFee(
         txSkeleton,
@@ -100,7 +100,7 @@ export class CkbClient {
   public async signTransaction(txSkeleton: TransactionSkeletonType, from: CkbAccount): Promise<Transaction> {
     let signatures;
     if (from instanceof MultisigAccount) {
-      txSkeleton = prepareSigningEntries(txSkeleton, this.netConfig, "SECP256K1_BLAKE160_MULTISIG");
+      txSkeleton = prepareSigningEntries(txSkeleton, this.config, "SECP256K1_BLAKE160_MULTISIG");
 
       const fromAccount: MultisigAccount = from;
       const message = txSkeleton.get("signingEntries").get(0)?.message;
@@ -116,7 +116,7 @@ export class CkbClient {
 
       signatures = [serializeMultisigScript(fromAccount.multiSigScript) + sigs];
     } else {
-      txSkeleton = prepareSigningEntries(txSkeleton, this.netConfig, "SECP256K1_BLAKE160");
+      txSkeleton = prepareSigningEntries(txSkeleton, this.config, "SECP256K1_BLAKE160");
 
       const fromAccount: NormalAccount = from;
       signatures = txSkeleton
