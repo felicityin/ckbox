@@ -3,7 +3,7 @@ import { Script } from "@ckb-lumos/lumos";
 import { CkbAccount, MultisigAccount } from "../../src/ckb_account";
 import { CkbClient } from "../../src/ckb_client";
 import { ContractClient } from "../../src/contract_client";
-import { CKB_RPC_URL, CKB_INDEXER_URL, PRIVATE_KEYS } from '../env';
+import { CKB_RPC_URL, CKB_INDEXER_URL, PRIVATE_KEYS } from '../config';
 
 async function main() {
   const ckbClient = new CkbClient(CKB_RPC_URL, CKB_INDEXER_URL);

@@ -2,7 +2,7 @@ import { BIish } from "@ckb-lumos/bi";
 import { MultisigAccount, NormalAccount } from "../../src/ckb_account";
 import { CkbClient } from "../../src/ckb_client";
 import { CoinClient } from "../../src/coin_client";
-import { CKB_RPC_URL, CKB_INDEXER_URL, PRIVATE_KEYS } from '../env';
+import { CKB_RPC_URL, CKB_INDEXER_URL, PRIVATE_KEYS } from '../config';
 
 async function main() {
   const ckbClient = new CkbClient(CKB_RPC_URL, CKB_INDEXER_URL);

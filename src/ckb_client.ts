@@ -1,6 +1,6 @@
 import { BIish } from "@ckb-lumos/bi";
 import { TransactionWithStatus } from "@ckb-lumos/base"
-import { commons, hd, Indexer, RPC, Transaction } from "@ckb-lumos/lumos";
+import { OutPoint, Cell, commons, hd, Indexer, RPC, Transaction } from "@ckb-lumos/lumos";
 import { predefined, Config } from "@ckb-lumos/config-manager";
 import { serializeMultisigScript } from '@ckb-lumos/common-scripts/lib/from_info';
 import { prepareSigningEntries } from "@ckb-lumos/common-scripts/lib/helper";
@@ -8,6 +8,8 @@ import { sealTransaction, TransactionSkeletonType } from "@ckb-lumos/helpers";
 
 import { CkbAccount, MultisigAccount, NormalAccount } from "./ckb_account";
 import { asyncSleep, calcFromInfos } from './utils';
+
+const feeRate = 1000;
 
 export class CkbClient {
   public rpc: RPC;
@@ -89,7 +91,7 @@ export class CkbClient {
       txSkeleton = await commons.common.payFeeByFeeRate(
         txSkeleton,
         calcFromInfos(from),
-        1000,
+        feeRate,
         undefined,
         { config },
       )
@@ -126,4 +128,21 @@ export class CkbClient {
     }
     return sealTransaction(txSkeleton, signatures);
   }
-};
+
+  public async getCellByOutPoint(outpoint: OutPoint): Promise<Cell> {
+    const tx = await this.rpc.get_transaction(outpoint.tx_hash);
+    if (!tx) {
+      throw new Error(`not found tx: ${outpoint.tx_hash}`)
+    }
+
+    const block = await this.rpc.get_block(tx.tx_status.block_hash!);
+    const index = Number(outpoint.index);
+    return {
+      cell_output: tx.transaction.outputs[index],
+      data: tx.transaction.outputs_data[index],
+      out_point: outpoint,
+      block_hash: tx.tx_status.block_hash,
+      block_number: block!.header.number,
+    }
+  }
+}
