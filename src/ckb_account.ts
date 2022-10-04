@@ -45,7 +45,7 @@ export class MultisigAccount {
   constructor(privateKeys: HexString[], R: number, M: number, net: Net = Net.TESTNET, since?: PackedSince) {
     this.privateKeys = privateKeys;
 
-    const config = net == Net.TESTNET ? predefined.AGGRON4 : predefined.LINA;
+    const config = net !== Net.MAINNET ? predefined.AGGRON4 : predefined.LINA;
     const publicKeyHashes = privateKeys.map((key) => privateKeyToBlake160(key));
     this.multiSigScript = { R, M, publicKeyHashes, since };
 
