@@ -18,7 +18,7 @@ export class NormalAccount {
     this.privateKey = privateKey;
 
     const args = privateKeyToBlake160(privateKey);
-    const config = net == Net.TESTNET ? predefined.AGGRON4 : predefined.LINA;
+    const config = net !== Net.MAINNET ? predefined.AGGRON4 : predefined.LINA;
     const shortAddress = generateSecp256k1Blake160Address(args, { config });
     this.lockScript = parseAddress(shortAddress, { config });
     this.address = encodeToAddress(this.lockScript, { config });
