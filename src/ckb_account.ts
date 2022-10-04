@@ -1,3 +1,4 @@
+import { ethers } from 'ethers';
 import { PackedSince } from "@ckb-lumos/base";
 import { MultisigScript, parseFromInfo } from "@ckb-lumos/common-scripts";
 import { predefined } from "@ckb-lumos/config-manager";
@@ -14,10 +15,14 @@ export class NormalAccount {
   public address: string;
   public lockScript: Script;
 
-  constructor(privateKey: string, net: Net = Net.TESTNET) {
-    this.privateKey = privateKey;
+  constructor(privateKey?: string, net: Net = Net.TESTNET) {
+    if (privateKey) {
+      this.privateKey = privateKey;
+    } else {
+      this.privateKey = ethers.Wallet.createRandom().privateKey;
+    }
 
-    const args = privateKeyToBlake160(privateKey);
+    const args = privateKeyToBlake160(this.privateKey);
     const config = net !== Net.MAINNET ? predefined.AGGRON4 : predefined.LINA;
     const shortAddress = generateSecp256k1Blake160Address(args, { config });
     this.lockScript = parseAddress(shortAddress, { config });
