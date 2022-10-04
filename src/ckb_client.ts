@@ -27,10 +27,16 @@ export class CkbClient {
     this.indexer = new Indexer(ckbRpcUrl, ckbIndexerUrl);
   }
 
+  public async submitTransaction(txSkeleton: TransactionSkeletonType, from: CkbAccount, fee?: BIish): Promise<string> {
+    txSkeleton = await this.payFee(txSkeleton, from, fee);
+    const sealedTx = await this.signTransaction(txSkeleton, from);
+    return await this.sendTransaction(sealedTx);
+  }
+
   /**
    * @returns The transaction hash.
    */
-  public async submitTransaction(sealedTx: Transaction): Promise<string> {
+  public async sendTransaction(sealedTx: Transaction): Promise<string> {
     return await this.rpc.send_transaction(sealedTx);
   }
 

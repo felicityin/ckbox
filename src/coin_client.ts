@@ -43,9 +43,7 @@ export class CoinClient {
       );
     };
 
-    txSkeleton = await this.ckbClient.payFee(txSkeleton, from, fee);
-    const sealedTx = await this.ckbClient.signTransaction(txSkeleton, from);
-    return await this.ckbClient.submitTransaction(sealedTx);
+    return await this.ckbClient.submitTransaction(txSkeleton, from, fee);
   }
 
   /**
@@ -78,9 +76,7 @@ export class CoinClient {
       );
     }
 
-    txSkeleton = await this.ckbClient.payFee(txSkeleton, from, fee);
-    const sealedTx = await this.ckbClient.signTransaction(txSkeleton, from);
-    return await this.ckbClient.submitTransaction(sealedTx);
+    return await this.ckbClient.submitTransaction(txSkeleton, from, fee);
   }
 
   public async getCkbBalance(address: string, lockOnly: boolean = true): Promise<bigint> {
@@ -128,9 +124,7 @@ export class CoinClient {
       { config: this.ckbClient.netConfig}
     );
 
-    txSkeleton = await this.ckbClient.payFee(txSkeleton, from, fee);
-    const sealedTx = await this.ckbClient.signTransaction(txSkeleton, from);
-    return await this.ckbClient.submitTransaction(sealedTx);
+    return await this.ckbClient.submitTransaction(txSkeleton, from, fee);
   }
 
   public calcToken(from: CkbAccount): string {
