@@ -3,7 +3,7 @@ import { commons, helpers, OutPoint } from "@ckb-lumos/lumos";
 
 import { CkbClient } from "./ckb_client";
 import { CkbAccount } from "./ckb_account";
-import { calcFromInfos } from './utils';
+import { calcFromInfos } from "./utils";
 
 export class DaoClient {
   ckbClient: CkbClient;
@@ -12,22 +12,35 @@ export class DaoClient {
     this.ckbClient = ckbClient;
   }
 
-  public async deposit(from: CkbAccount, to: string, amount: BIish, fee?: BIish): Promise<string> {
-    let txSkeleton = helpers.TransactionSkeleton({ cellProvider: this.ckbClient.indexer });
+  public async deposit(
+    from: CkbAccount,
+    to: string,
+    amount: BIish,
+    fee?: BIish
+  ): Promise<string> {
+    let txSkeleton = helpers.TransactionSkeleton({
+      cellProvider: this.ckbClient.indexer,
+    });
 
     txSkeleton = await commons.dao.deposit(
       txSkeleton,
       calcFromInfos(from)[0],
       to,
       amount,
-      { config: this.ckbClient.config },
+      { config: this.ckbClient.config }
     );
 
     return await this.ckbClient.submitTransaction(txSkeleton, from, fee);
   }
 
-  public async withdraw(from: CkbAccount, depositOutpoint: OutPoint, fee?: BIish) {
-    let txSkeleton = helpers.TransactionSkeleton({ cellProvider: this.ckbClient.indexer });
+  public async withdraw(
+    from: CkbAccount,
+    depositOutpoint: OutPoint,
+    fee?: BIish
+  ) {
+    let txSkeleton = helpers.TransactionSkeleton({
+      cellProvider: this.ckbClient.indexer,
+    });
 
     const depositCell = await this.ckbClient.getCellByOutPoint(depositOutpoint);
 
@@ -35,17 +48,27 @@ export class DaoClient {
       txSkeleton,
       depositCell,
       calcFromInfos(from)[0],
-      { config: this.ckbClient.config },
+      { config: this.ckbClient.config }
     );
 
     return await this.ckbClient.submitTransaction(txSkeleton, from, fee);
   }
 
-  public async unlock(from: CkbAccount, to: string, depositOutpoint: OutPoint, withdrawOutpoint: OutPoint, fee?: BIish) {
-    let txSkeleton = helpers.TransactionSkeleton({ cellProvider: this.ckbClient.indexer });
+  public async unlock(
+    from: CkbAccount,
+    to: string,
+    depositOutpoint: OutPoint,
+    withdrawOutpoint: OutPoint,
+    fee?: BIish
+  ) {
+    let txSkeleton = helpers.TransactionSkeleton({
+      cellProvider: this.ckbClient.indexer,
+    });
 
     const depositCell = await this.ckbClient.getCellByOutPoint(depositOutpoint);
-    const withdrawCell = await this.ckbClient.getCellByOutPoint(withdrawOutpoint);
+    const withdrawCell = await this.ckbClient.getCellByOutPoint(
+      withdrawOutpoint
+    );
 
     txSkeleton = await commons.dao.unlock(
       txSkeleton,
@@ -53,7 +76,7 @@ export class DaoClient {
       withdrawCell,
       to,
       calcFromInfos(from)[0],
-      { config: this.ckbClient.config },
+      { config: this.ckbClient.config }
     );
 
     return await this.ckbClient.submitTransaction(txSkeleton, from, fee);

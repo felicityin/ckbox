@@ -7,8 +7,8 @@ export enum Net {
 }
 
 export enum ScriptType {
-  type = 'type',
-  lock = 'lock',
+  type = "type",
+  lock = "lock",
 }
 
 export interface ScriptConfig {

@@ -9,7 +9,7 @@
     "build": "rm -rf dist && tsc -p .",
     "lint": "eslint \"**/*.ts\"",
     "test": "jest",
-    "_fmt": "prettier 'src/**/*.ts' 'examples/**/*.js' 'examples/**/*.ts' '.eslintrc.js'",
+    "_fmt": "prettier 'src/**/*.ts' 'examples/**/*.ts' '.eslintrc.js'",
     "fmt": "yarn _fmt --write",
     "fmt:check": "yarn _fmt --check"
   },
@@ -21,7 +21,8 @@
     "@ckb-lumos/lumos": "0.18.0",
     "@ckitjs/ckit": "0.2.0",
     "blake2b": "^2.1.4",
-    "ethers": "^5.4.7"
+    "ethers": "^5.4.7",
+    "prettier": "^2.7.1"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.19.3",

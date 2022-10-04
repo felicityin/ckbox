@@ -1,9 +1,13 @@
 import { BIish } from "@ckb-lumos/bi";
 import { Script } from "@ckb-lumos/lumos";
-import { CkbAccount, MultisigAccount, NormalAccount } from "../../src/ckb_account";
+import {
+  CkbAccount,
+  MultisigAccount,
+  NormalAccount,
+} from "../../src/ckb_account";
 import { CkbClient } from "../../src/ckb_client";
 import { CoinClient } from "../../src/coin_client";
-import { CKB_RPC_URL, CKB_INDEXER_URL, PRIVATE_KEYS } from '../config';
+import { CKB_RPC_URL, CKB_INDEXER_URL, PRIVATE_KEYS } from "../config";
 
 async function main() {
   const ckbClient = new CkbClient(CKB_RPC_URL, CKB_INDEXER_URL);
@@ -16,9 +20,15 @@ async function main() {
   await transferSudt(ckbClient, coinClient, account1, account2);
 }
 
-async function issueSudt(ckbClient: CkbClient, coinClient: CoinClient, account: CkbAccount): Promise<Script> {
+async function issueSudt(
+  ckbClient: CkbClient,
+  coinClient: CoinClient,
+  account: CkbAccount
+): Promise<Script> {
   const txHash = await coinClient.issueToken(account, 10000n);
-  console.log("issue sudt tx: https://pudge.explorer.nervos.org/transaction/" + txHash);
+  console.log(
+    "issue sudt tx: https://pudge.explorer.nervos.org/transaction/" + txHash
+  );
 
   const res = await ckbClient.waitForTransaction(txHash);
   if (res) {
@@ -36,14 +46,14 @@ async function transferSudt(
   ckbClient: CkbClient,
   coinClient: CoinClient,
   fromAccount: CkbAccount,
-  toAccount: CkbAccount,
- ) {
+  toAccount: CkbAccount
+) {
   const sudt = coinClient.calcToken(fromAccount);
-  const to: Map<string, BIish> = new Map([
-    [toAccount.address, 100n],
-  ]); 
+  const to: Map<string, BIish> = new Map([[toAccount.address, 100n]]);
   const txHash = await coinClient.transferSudt(fromAccount, to, sudt);
-  console.log("transfer sudt tx: https://pudge.explorer.nervos.org/transaction/" + txHash);
+  console.log(
+    "transfer sudt tx: https://pudge.explorer.nervos.org/transaction/" + txHash
+  );
 
   const res = await ckbClient.waitForTransaction(txHash);
   if (res) {
@@ -51,9 +61,15 @@ async function transferSudt(
   }
 
   const sudtScript = await coinClient.calcSudtScript(fromAccount);
-  const sudtBalanceAfter = await coinClient.getSudtBalance(fromAccount.address, sudtScript);
+  const sudtBalanceAfter = await coinClient.getSudtBalance(
+    fromAccount.address,
+    sudtScript
+  );
   console.log("account1 sudt balance: " + sudtBalanceAfter);
-  const sudtBalanceAfter2 = await coinClient.getSudtBalance(toAccount.address, sudtScript);
+  const sudtBalanceAfter2 = await coinClient.getSudtBalance(
+    toAccount.address,
+    sudtScript
+  );
   console.log("account2 sudt balance: " + sudtBalanceAfter2);
 }
 

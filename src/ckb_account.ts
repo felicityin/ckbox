@@ -1,9 +1,13 @@
-import { ethers } from 'ethers';
+import { ethers } from "ethers";
 import { PackedSince } from "@ckb-lumos/base";
 import { MultisigScript, parseFromInfo } from "@ckb-lumos/common-scripts";
 import { predefined } from "@ckb-lumos/config-manager";
 import { privateKeyToBlake160 } from "@ckb-lumos/hd/lib/key";
-import { encodeToAddress, generateSecp256k1Blake160Address, parseAddress } from "@ckb-lumos/helpers";
+import {
+  encodeToAddress,
+  generateSecp256k1Blake160Address,
+  parseAddress,
+} from "@ckb-lumos/helpers";
 import { HexString, Script } from "@ckb-lumos/lumos";
 
 import { Net } from "./types";
@@ -42,12 +46,18 @@ export class MultisigAccount {
    * @param M M of N signatures must be provided to unlock the cell. N equals to the size of privateKeys.
    * @param net
    * @param since locktime in since format
-   * @param net 
-   * 
+   * @param net
+   *
    * R, M are single byte unsigned integers that ranges from 0 to 255.
    * R must no more than M.
    */
-  constructor(privateKeys: HexString[], R: number, M: number, net: Net = Net.TESTNET, since?: PackedSince) {
+  constructor(
+    privateKeys: HexString[],
+    R: number,
+    M: number,
+    net: Net = Net.TESTNET,
+    since?: PackedSince
+  ) {
     this.privateKeys = privateKeys;
 
     const config = net !== Net.MAINNET ? predefined.AGGRON4 : predefined.LINA;

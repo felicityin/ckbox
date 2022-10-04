@@ -2,7 +2,7 @@ import { BIish } from "@ckb-lumos/bi";
 import { MultisigAccount, NormalAccount } from "../../src/ckb_account";
 import { CkbClient } from "../../src/ckb_client";
 import { CoinClient } from "../../src/coin_client";
-import { CKB_RPC_URL, CKB_INDEXER_URL, PRIVATE_KEYS } from '../config';
+import { CKB_RPC_URL, CKB_INDEXER_URL, PRIVATE_KEYS } from "../config";
 
 async function main() {
   const ckbClient = new CkbClient(CKB_RPC_URL, CKB_INDEXER_URL);
@@ -16,11 +16,11 @@ async function main() {
   const ckbBalance2Before = await coinClient.getCkbBalance(account2.address);
   console.log("account2 ckb balance: " + ckbBalance2Before);
 
-  const to: Map<string, BIish> = new Map([
-    [account2.address, 100e8],
-  ]); 
+  const to: Map<string, BIish> = new Map([[account2.address, 100e8]]);
   const txHash = await coinClient.transferCkb(account1, to);
-  console.log("transfer ckb tx: https://pudge.explorer.nervos.org/transaction/" + txHash);
+  console.log(
+    "transfer ckb tx: https://pudge.explorer.nervos.org/transaction/" + txHash
+  );
 
   const res = await ckbClient.waitForTransaction(txHash);
   if (res) {

@@ -1,13 +1,16 @@
-import { readFileSync } from 'fs';
+import { readFileSync } from "fs";
 
 import { BIish } from "@ckb-lumos/bi";
 import { Script } from "@ckb-lumos/lumos";
-import { generateDeployWithTypeIdTx, generateUpgradeTypeIdDataTx } from "@ckb-lumos/common-scripts/lib/deploy";
+import {
+  generateDeployWithTypeIdTx,
+  generateUpgradeTypeIdDataTx,
+} from "@ckb-lumos/common-scripts/lib/deploy";
 
 import { CkbClient } from "./ckb_client";
 import { CkbAccount } from "./ckb_account";
 import { ScriptConfig } from "./types";
-import { calcFromInfos } from './utils';
+import { calcFromInfos } from "./utils";
 
 export class ContractClient {
   ckbClient: CkbClient;
@@ -30,7 +33,11 @@ export class ContractClient {
       config: this.ckbClient.config,
     });
 
-    const txHash = await this.ckbClient.submitTransaction(result.txSkeleton, account, fee);
+    const txHash = await this.ckbClient.submitTransaction(
+      result.txSkeleton,
+      account,
+      fee
+    );
     return [txHash, result.typeId, result.scriptConfig];
   }
 
@@ -50,7 +57,11 @@ export class ContractClient {
       typeId,
     });
 
-    const txHash = await this.ckbClient.submitTransaction(result.txSkeleton, account, fee);
+    const txHash = await this.ckbClient.submitTransaction(
+      result.txSkeleton,
+      account,
+      fee
+    );
     return [txHash, result.scriptConfig];
   }
 }

@@ -1,13 +1,22 @@
 import { BIish } from "@ckb-lumos/bi";
-import { TransactionWithStatus } from "@ckb-lumos/base"
-import { OutPoint, Cell, commons, hd, Indexer, RPC, Transaction } from "@ckb-lumos/lumos";
+import { TransactionWithStatus } from "@ckb-lumos/base";
+import {
+  OutPoint,
+  Cell,
+  commons,
+  hd,
+  Indexer,
+  RPC,
+  Transaction,
+} from "@ckb-lumos/lumos";
 import { predefined, Config } from "@ckb-lumos/config-manager";
-import { serializeMultisigScript } from '@ckb-lumos/common-scripts/lib/from_info';
+import { serializeMultisigScript } from "@ckb-lumos/common-scripts/lib/from_info";
 import { prepareSigningEntries } from "@ckb-lumos/common-scripts/lib/helper";
 import { sealTransaction, TransactionSkeletonType } from "@ckb-lumos/helpers";
 
 import { CkbAccount, MultisigAccount, NormalAccount } from "./ckb_account";
-import { asyncSleep, calcFromInfos } from './utils';
+import { asyncSleep, calcFromInfos } from "./utils";
+import { Net } from "./types";
 
 const feeRate = 1000;
 
@@ -15,6 +24,7 @@ export class CkbClient {
   public rpc: RPC;
   public indexer: InstanceType<typeof Indexer>;
   public config: Config;
+  public netType: Net;
 
   constructor(ckbRpcUrl: string, ckbIndexerUrl: string) {
     if (!ckbRpcUrl) {
@@ -24,12 +34,22 @@ export class CkbClient {
       throw new Error("Indexer URL cannot be empty.");
     }
 
-    this.config = ckbRpcUrl.includes("main") ? predefined.LINA: predefined.AGGRON4;
+    if (ckbRpcUrl.includes("main")) {
+      this.config = predefined.LINA;
+      this.netType = Net.MAINNET;
+    } else {
+      this.config = predefined.AGGRON4;
+      this.netType = ckbRpcUrl.includes("test") ? Net.TESTNET : Net.DEVNET;
+    }
     this.rpc = new RPC(ckbRpcUrl);
     this.indexer = new Indexer(ckbRpcUrl, ckbIndexerUrl);
   }
 
-  public async submitTransaction(txSkeleton: TransactionSkeletonType, from: CkbAccount, fee?: BIish): Promise<string> {
+  public async submitTransaction(
+    txSkeleton: TransactionSkeletonType,
+    from: CkbAccount,
+    fee?: BIish
+  ): Promise<string> {
     txSkeleton = await this.payFee(txSkeleton, from, fee);
     const sealedTx = await this.signTransaction(txSkeleton, from);
     return await this.sendTransaction(sealedTx);
@@ -42,13 +62,15 @@ export class CkbClient {
     return await this.rpc.send_transaction(sealedTx);
   }
 
-  public async getTransaction(txHash: string): Promise<TransactionWithStatus | null> {
+  public async getTransaction(
+    txHash: string
+  ): Promise<TransactionWithStatus | null> {
     return await this.rpc.get_transaction(txHash);
   }
 
   public async waitForTransaction(
     txHash: string,
-    options: { pollIntervalMs?: number; timeoutMs?: number } = {},
+    options: { pollIntervalMs?: number; timeoutMs?: number } = {}
   ): Promise<Transaction | null> {
     const { pollIntervalMs = 1000, timeoutMs = 120000 } = options;
     const start = Date.now();
@@ -57,7 +79,7 @@ export class CkbClient {
 
     while (Date.now() - start <= timeoutMs) {
       const tx = await this.rpc.get_transaction(txHash);
-      if (tx?.tx_status?.status === 'committed') {
+      if (tx?.tx_status?.status === "committed") {
         result = tx.transaction;
         break;
       }
@@ -77,7 +99,11 @@ export class CkbClient {
     return result;
   }
 
-  public async payFee(txSkeleton: TransactionSkeletonType, from: CkbAccount, fee?: BIish): Promise<TransactionSkeletonType> {
+  public async payFee(
+    txSkeleton: TransactionSkeletonType,
+    from: CkbAccount,
+    fee?: BIish
+  ): Promise<TransactionSkeletonType> {
     const config = this.config;
     if (fee) {
       txSkeleton = await commons.common.payFee(
@@ -85,24 +111,31 @@ export class CkbClient {
         calcFromInfos(from),
         fee,
         undefined,
-        { config },
-      )
+        { config }
+      );
     } else {
       txSkeleton = await commons.common.payFeeByFeeRate(
         txSkeleton,
         calcFromInfos(from),
         feeRate,
         undefined,
-        { config },
-      )
+        { config }
+      );
     }
     return txSkeleton;
   }
 
-  public async signTransaction(txSkeleton: TransactionSkeletonType, from: CkbAccount): Promise<Transaction> {
+  public async signTransaction(
+    txSkeleton: TransactionSkeletonType,
+    from: CkbAccount
+  ): Promise<Transaction> {
     let signatures;
     if (from instanceof MultisigAccount) {
-      txSkeleton = prepareSigningEntries(txSkeleton, this.config, "SECP256K1_BLAKE160_MULTISIG");
+      txSkeleton = prepareSigningEntries(
+        txSkeleton,
+        this.config,
+        "SECP256K1_BLAKE160_MULTISIG"
+      );
 
       const fromAccount: MultisigAccount = from;
       const message = txSkeleton.get("signingEntries").get(0)?.message;
@@ -118,12 +151,18 @@ export class CkbClient {
 
       signatures = [serializeMultisigScript(fromAccount.multiSigScript) + sigs];
     } else {
-      txSkeleton = prepareSigningEntries(txSkeleton, this.config, "SECP256K1_BLAKE160");
+      txSkeleton = prepareSigningEntries(
+        txSkeleton,
+        this.config,
+        "SECP256K1_BLAKE160"
+      );
 
       const fromAccount: NormalAccount = from;
       signatures = txSkeleton
         .get("signingEntries")
-        .map((entry) => hd.key.signRecoverable(entry.message, fromAccount.privateKey))
+        .map((entry) =>
+          hd.key.signRecoverable(entry.message, fromAccount.privateKey)
+        )
         .toArray();
     }
     return sealTransaction(txSkeleton, signatures);
@@ -132,7 +171,7 @@ export class CkbClient {
   public async getCellByOutPoint(outpoint: OutPoint): Promise<Cell> {
     const tx = await this.rpc.get_transaction(outpoint.tx_hash);
     if (!tx) {
-      throw new Error(`not found tx: ${outpoint.tx_hash}`)
+      throw new Error(`not found tx: ${outpoint.tx_hash}`);
     }
 
     const block = await this.rpc.get_block(tx.tx_status.block_hash!);
@@ -143,6 +182,6 @@ export class CkbClient {
       out_point: outpoint,
       block_hash: tx.tx_status.block_hash,
       block_number: block!.header.number,
-    }
+    };
   }
 }

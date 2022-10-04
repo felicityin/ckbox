@@ -3,7 +3,7 @@ import { Script } from "@ckb-lumos/lumos";
 import { CkbAccount, MultisigAccount } from "../../src/ckb_account";
 import { CkbClient } from "../../src/ckb_client";
 import { ContractClient } from "../../src/contract_client";
-import { CKB_RPC_URL, CKB_INDEXER_URL, PRIVATE_KEYS } from '../config';
+import { CKB_RPC_URL, CKB_INDEXER_URL, PRIVATE_KEYS } from "../config";
 
 async function main() {
   const ckbClient = new CkbClient(CKB_RPC_URL, CKB_INDEXER_URL);
@@ -15,9 +15,19 @@ async function main() {
   await upgrade(ckbClient, coinClient, account, typeId);
 }
 
-async function deploy(ckbClient: CkbClient, coinClient: ContractClient, account: CkbAccount): Promise<Script> {
-  const [txHash, typeId, scriptConfig] = await coinClient.deploy(account, "examples/contract-client/always-success");
-  console.log("deploy contract tx: https://pudge.explorer.nervos.org/transaction/" + txHash);
+async function deploy(
+  ckbClient: CkbClient,
+  coinClient: ContractClient,
+  account: CkbAccount
+): Promise<Script> {
+  const [txHash, typeId, scriptConfig] = await coinClient.deploy(
+    account,
+    "examples/contract-client/always-success"
+  );
+  console.log(
+    "deploy contract tx: https://pudge.explorer.nervos.org/transaction/" +
+      txHash
+  );
   console.log("type id: %o", typeId);
   console.log("script config: %o", scriptConfig);
 
@@ -28,9 +38,21 @@ async function deploy(ckbClient: CkbClient, coinClient: ContractClient, account:
   return typeId;
 }
 
-async function upgrade(ckbClient: CkbClient, coinClient: ContractClient, account: CkbAccount, typeId: Script) {
-  const [txHash, scriptConfig] = await coinClient.upgrade(account, typeId, "examples/contract-client/always-success");
-  console.log("upgrade contract tx: https://pudge.explorer.nervos.org/transaction/" + txHash);
+async function upgrade(
+  ckbClient: CkbClient,
+  coinClient: ContractClient,
+  account: CkbAccount,
+  typeId: Script
+) {
+  const [txHash, scriptConfig] = await coinClient.upgrade(
+    account,
+    typeId,
+    "examples/contract-client/always-success"
+  );
+  console.log(
+    "upgrade contract tx: https://pudge.explorer.nervos.org/transaction/" +
+      txHash
+  );
   console.log("script config: %o", scriptConfig);
 
   const res = await ckbClient.waitForTransaction(txHash);
