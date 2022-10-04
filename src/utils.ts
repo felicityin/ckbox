@@ -6,7 +6,7 @@ export function asyncSleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export function getFromInfos(from: CkbAccount): FromInfo[] {
+export function calcFromInfos(from: CkbAccount): FromInfo[] {
   let froms: FromInfo[];
   if (from instanceof MultisigAccount) {
     const account: MultisigAccount = from;

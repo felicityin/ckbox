@@ -1,8 +1,9 @@
 export type HexNumber = string;
 
 export enum Net {
-  TESTNET = 0,
-  MAINNET = 1,
+  DEVNET = 0,
+  TESTNET = 1,
+  MAINNET = 2,
 }
 
 export enum ScriptType {

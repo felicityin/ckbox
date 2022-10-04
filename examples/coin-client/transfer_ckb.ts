@@ -18,7 +18,7 @@ async function main() {
 
   const to: Map<string, BIish> = new Map([
     [account2.address, 100e8],
-  ]); 
+  ]);
   const txHash = await coinClient.transferCkb(account1, to);
   console.log("transfer ckb tx: https://pudge.explorer.nervos.org/transaction/" + txHash);
 
@@ -39,7 +39,7 @@ async function main() {
 main();
 
 /*
-output:
+$ ts-node examples/coin-client/transfer_ckb.ts
 account1 ckb balance: 5333399926728
 account2 ckb balance: 2090000000000
 transfer ckb tx: https://pudge.explorer.nervos.org/transaction/0xc87f76eb35f33164aee21aff01cd62cf25cdb1b7f6520a4a944e382cf8d8084c

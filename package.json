@@ -1,10 +1,11 @@
 {
-  "name": "ckb-tools",
+  "name": "ckbox",
   "version": "1.0.0",
   "main": "index.js",
   "author": "felicityin",
   "license": "MIT",
   "scripts": {
+    "docs": "typedoc .",
     "build": "rm -rf dist && tsc -p .",
     "lint": "eslint \"**/*.ts\"",
     "test": "jest",

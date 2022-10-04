@@ -39,7 +39,7 @@ async function main() {
 main();
 
 /*
-output:
+$ ts-node examples/coin-client/transfer_ckb_multisig.ts
 account1 ckb balance: 123899981174
 account2 ckb balance: 2100000000000
 transfer ckb tx: https://pudge.explorer.nervos.org/transaction/0xfd14c3c201818465025977c997387c4178a7e09ca5c78757c7a4075b6c0b685c

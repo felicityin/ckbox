@@ -7,7 +7,7 @@ import { prepareSigningEntries } from "@ckb-lumos/common-scripts/lib/helper";
 import { sealTransaction, TransactionSkeletonType } from "@ckb-lumos/helpers";
 
 import { CkbAccount, MultisigAccount, NormalAccount } from "./ckb_account";
-import { asyncSleep, getFromInfos } from './utils';
+import { asyncSleep, calcFromInfos } from './utils';
 
 export class CkbClient {
   public rpc: RPC;
@@ -22,7 +22,7 @@ export class CkbClient {
       throw new Error("Indexer URL cannot be empty.");
     }
 
-    this.netConfig = ckbRpcUrl.includes("test") ? predefined.AGGRON4 : predefined.LINA;
+    this.netConfig = ckbRpcUrl.includes("main") ? predefined.LINA: predefined.AGGRON4;
     this.rpc = new RPC(ckbRpcUrl);
     this.indexer = new Indexer(ckbRpcUrl, ckbIndexerUrl);
   }
@@ -74,7 +74,7 @@ export class CkbClient {
     if (fee) {
       txSkeleton = await commons.common.payFee(
         txSkeleton,
-        getFromInfos(from),
+        calcFromInfos(from),
         fee,
         undefined,
         { config },
@@ -82,7 +82,7 @@ export class CkbClient {
     } else {
       txSkeleton = await commons.common.payFeeByFeeRate(
         txSkeleton,
-        getFromInfos(from),
+        calcFromInfos(from),
         1000,
         undefined,
         { config },

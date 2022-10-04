@@ -1,3 +1,4 @@
+import { utils } from "@ckb-lumos/base"
 import { BIish } from "@ckb-lumos/bi";
 import { sudt } from "@ckb-lumos/common-scripts";
 import { parseAddress } from "@ckb-lumos/helpers";
@@ -7,7 +8,7 @@ import { readBigUInt128LE } from "@lay2/pw-core"
 import { CkbClient } from "./ckb_client";
 import { CkbAccount } from "./ckb_account";
 import { ScriptType } from "./types";
-import { getFromInfos } from './utils';
+import { calcFromInfos } from './utils';
 
 export class CoinClient {
   ckbClient: CkbClient;
@@ -33,7 +34,7 @@ export class CoinClient {
     for (var [toAddress, amount] of to) {
       txSkeleton = await commons.common.transfer(
         txSkeleton,
-        getFromInfos(from),
+        calcFromInfos(from),
         toAddress,
         amount,
         undefined,
@@ -66,7 +67,7 @@ export class CoinClient {
     for (var [toAddress, amount] of to) {
       txSkeleton = await sudt.transfer(
         txSkeleton,
-        getFromInfos(from),
+        calcFromInfos(from),
         sudtToken,
         toAddress,
         amount,
@@ -82,13 +83,16 @@ export class CoinClient {
     return await this.ckbClient.submitTransaction(sealedTx);
   }
 
-  public async getCkbBalance(address: string): Promise<bigint> {
+  public async getCkbBalance(address: string, lockOnly: boolean = true): Promise<bigint> {
     const lock = parseAddress(address, { config: this.ckbClient.netConfig });
     const searchKey = {
       script: lock,
       script_type: ScriptType.lock,
     };
-    const cells = (await this.ckbClient.indexer.getCells(searchKey)).objects.filter((cell) => !cell.cell_output.type);
+    let cells = (await this.ckbClient.indexer.getCells(searchKey)).objects;
+    if (lockOnly) {
+      cells = cells.filter((cell) => !cell.cell_output.type);
+    }
     const balance = cells.map((cell) => BigInt(cell.cell_output.capacity)).reduce((p, c) => p + c, 0n);
     return balance;
   }
@@ -98,26 +102,26 @@ export class CoinClient {
     const searchKey = {
       script: lock,
       script_type: ScriptType.lock,
-      filters: {
+      filter: {
         script: udt,
       },
     };
-    const cells = (await this.ckbClient.indexer.getCells(searchKey)).objects.filter((cell) => !cell.cell_output.type);
+    const cells = (await this.ckbClient.indexer.getCells(searchKey)).objects;
     const balance = cells.map((cell) => this.getSUDTAmount(cell.data)).reduce((p, c) => p + c, 0n);
     return balance;
   }
 
   getSUDTAmount(cellData: string): bigint {
     const sudtAmountData = cellData.slice(0, 34);
-    return BigInt(`0x${readBigUInt128LE(sudtAmountData).toString(16)}`);
+    return BigInt(readBigUInt128LE(sudtAmountData).toString());
   }
 
-  public async issueToken(from: CkbAccount, amount: BIish, fee?: BIish): Promise<[string, Script]> {
+  public async issueToken(from: CkbAccount, amount: BIish, fee?: BIish): Promise<string> {
     let txSkeleton = helpers.TransactionSkeleton({ cellProvider: this.ckbClient.indexer });
 
-    await sudt.issueToken(
+    txSkeleton = await sudt.issueToken(
       txSkeleton,
-      getFromInfos(from)[0],
+      calcFromInfos(from)[0],
       amount,
       undefined,
       undefined,
@@ -126,8 +130,22 @@ export class CoinClient {
 
     txSkeleton = await this.ckbClient.payFee(txSkeleton, from, fee);
     const sealedTx = await this.ckbClient.signTransaction(txSkeleton, from);
-    const txHash = await this.ckbClient.submitTransaction(sealedTx);
-    const sudtScript = txSkeleton.get("outputs").get(0)!.cell_output.type;
-    return [txHash, sudtScript!];
+    return await this.ckbClient.submitTransaction(sealedTx);
+  }
+
+  public calcToken(from: CkbAccount): string {
+    return this.calcSudtScript(from).args;
+  }
+
+  public calcSudtScript(from: CkbAccount): Script {
+    const template = this.ckbClient.netConfig.SCRIPTS.SUDT;
+    if (!template) {
+      throw new Error("Provided config does not have SUDT script setup!");
+    }
+    return {
+      code_hash: template.CODE_HASH,
+      hash_type: template.HASH_TYPE,
+      args: utils.computeScriptHash(from.lockScript)
+    };
   }
 }
