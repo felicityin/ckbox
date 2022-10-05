@@ -8,7 +8,7 @@ Ckbox provides convenient APIs to interact with the Nervos CKB.
 
 # Examples
 
-[example](https://github.com/felicityin/ckbox/tree/main/examples)
+[examples](https://github.com/felicityin/ckbox/tree/main/examples)
 
 # Building
 
