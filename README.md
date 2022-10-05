@@ -3,7 +3,7 @@
 Ckbox provides convenient APIs to interact with the Nervos CKB.
 
 - CoinClient: Transfer the ckb. Issue and transfer the sUDT. Get the balance.
-- ContranctClient: Deploy and upgrade the contract.
+- ContractClient: Deploy and upgrade the contract.
 - DaoClient: Depost, withdraw and unclock the DAO.
 
 # Examples
