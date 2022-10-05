@@ -82,3 +82,7 @@ export class DaoClient {
     return await this.ckbClient.submitTransaction(txSkeleton, from, fee);
   }
 }
+
+export default {
+  DaoClient,
+};

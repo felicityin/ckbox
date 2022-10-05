@@ -44,3 +44,15 @@ yarn test
 ```
 yarn fmt
 ```
+
+# Installing the package
+
+Install from the command line:
+```
+$ yarn add @felicityin/ckbox
+```
+
+Install via package.json:
+```
+"@felicityin/ckbox": "^1.0.0"
+```

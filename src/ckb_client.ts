@@ -185,3 +185,7 @@ export class CkbClient {
     };
   }
 }
+
+export default {
+  CkbClient,
+};

@@ -65,3 +65,7 @@ export class ContractClient {
     return [txHash, result.scriptConfig];
   }
 }
+
+export default {
+  ContractClient,
+};

@@ -1,7 +1,9 @@
 {
-  "name": "ckbox",
+  "name": "@felicityin/ckbox",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "Ckbox provides convenient APIs to interact with the Nervos CKB.",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "author": "felicityin",
   "license": "MIT",
   "scripts": {
@@ -10,7 +12,14 @@
     "test": "jest",
     "_fmt": "prettier 'src/**/*.ts' 'examples/**/*.ts' '.eslintrc.js'",
     "fmt": "yarn _fmt --write",
-    "fmt:check": "yarn _fmt --check"
+    "fmt:check": "yarn _fmt --check",
+    "clean": "rm -rf lib",
+    "release": "npm publish --access public.",
+    "prepare": "npm run build",
+    "prepublishOnly": "yarn run test && yarn run fmt",
+    "preversion": "yarn run fmt",
+    "version": "yarn run fmt && git add -A src",
+    "postversion": "git push && git push --tags"
   },
   "dependencies": {
     "@ckb-lumos/ckb-indexer": "0.18.0",
@@ -38,5 +47,26 @@
     "require": [
       "ts-node/register"
     ]
-  }
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://npm.pkg.github.com"
+  },
+  "directories": {
+    "example": "examples",
+    "lib": "lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/felicityin/ckbox.git"
+  },
+  "keywords": [
+    "CKB",
+    "Nervos",
+    "API"
+  ],
+  "bugs": {
+    "url": "https://github.com/felicityin/ckbox/issues"
+  },
+  "homepage": "https://github.com/felicityin/ckbox#readme"
 }

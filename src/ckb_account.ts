@@ -78,3 +78,10 @@ export function scriptToAddress(script: Script): String {
 export function addressToScript(address: string): Script {
   return parseAddress(address);
 }
+
+export default {
+  NormalAccount,
+  MultisigAccount,
+  scriptToAddress,
+  addressToScript,
+};

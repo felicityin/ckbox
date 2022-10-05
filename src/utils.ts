@@ -16,3 +16,7 @@ export function calcFromInfos(from: CkbAccount): FromInfo[] {
   }
   return froms;
 }
+
+export default {
+  calcFromInfos,
+};

@@ -160,3 +160,7 @@ export class CoinClient {
     };
   }
 }
+
+export default {
+  CoinClient,
+};

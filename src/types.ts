@@ -19,3 +19,8 @@ export interface ScriptConfig {
   DEP_TYPE: "dep_group" | "code";
   SHORT_ID?: number;
 }
+
+export default {
+  Net,
+  ScriptType,
+};
