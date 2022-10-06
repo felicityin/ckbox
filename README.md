@@ -1,6 +1,6 @@
 # Ckbox
 
-Ckbox provides convenient APIs to interact with the Nervos CKB.
+Ckbox offers a set of tools to make it easy to interact with the Nervos CKB.
 
 - CoinClient: Transfer the ckb. Issue and transfer the sUDT. Get the balance.
 - ContractClient: Deploy and upgrade the contract.
